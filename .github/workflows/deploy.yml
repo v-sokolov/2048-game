@@ -1,0 +1,47 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Least privilege the Pages deploy needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Newest push supersedes any older in-flight publish.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.13.0
+      # packageManager field activates yarn 4 via corepack.
+      - run: corepack enable
+      - uses: actions/configure-pages@v5
+      # No lockfile committed (locally-generated one pins internal Wix registry).
+      # --no-immutable lets yarn resolve fresh from public registry on each CI run.
+      - run: yarn install --no-immutable
+      # tsc --noEmit && vite build; a type/build error fails here so deploy never runs.
+      - run: yarn build
+        env:
+          GITHUB_PAGES: 'true'
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

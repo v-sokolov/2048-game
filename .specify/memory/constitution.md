@@ -1,24 +1,22 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.5.0 → 1.6.0 (MINOR: new Reference Materials section added)
+Version change: 1.7.0 → 1.8.0 (MINOR: new Principle IX — Layered Architecture)
 
 Modified principles: N/A
 
-Modified sections: N/A
-
 Added sections:
-  - Reference Materials — four local-only intro requirement files (gitignored under docs/);
-    game logic spec, original rules PDF, Figma UI design, FE test PDF
+  - Principle IX. Layered Architecture — tools/utils placed in layers by scope;
+    isolation preferred; layers communicate through established interfaces;
+    layers may be domain-based or feature-scoped
 
 Removed sections: N/A
 
 Templates updated:
-  ✅ .specify/templates/plan-template.md — no structural changes needed
-  ✅ .specify/templates/spec-template.md — no structural changes needed
+  ✅ .specify/templates/plan-template.md — Constitution Check updated (I–IX)
   ✅ .specify/templates/tasks-template.md — no structural changes needed
 
-Follow-up TODOs: none (docs/ is already gitignored; files are local-only by design)
+Follow-up TODOs: none
 -->
 
 # 2048 Game Constitution
@@ -30,18 +28,16 @@ Follow-up TODOs: none (docs/ is already gitignored; files are local-only by desi
 The core game logic (board state, tile movement, merge rules, score) MUST be implemented
 as a pure, framework-agnostic module with no direct coupling to the rendering layer.
 UI code MAY call into the game engine; the game engine MUST NOT reference any UI primitives.
-This separation enables independent testing of logic and independent swapping of the view layer.
 
 ### II. Test-First (NON-NEGOTIABLE)
 
-TDD is mandatory: tests MUST be written and reviewed before any implementation code is added.
-For every implementation case, TDD MUST be attempted first. Only when TDD is structurally
-impossible for a given case (e.g., pure rendering glue with no testable logic) MAY an
-exception be granted; the exception MUST be noted in the relevant task.
+TDD is mandatory: tests MUST be written before any implementation code.
+For every case, TDD MUST be attempted first. Exceptions (e.g., pure rendering glue with
+no testable logic) MUST be noted in the relevant task.
 
-The Red-Green-Refactor cycle MUST be strictly enforced:
-- Red: write a failing test that describes the desired behaviour.
-- Green: write the minimal implementation to make the test pass.
+Red-Green-Refactor cycle MUST be enforced:
+- Red: failing test describing the desired behaviour.
+- Green: minimal implementation to make it pass.
 - Refactor: clean up without breaking tests.
 
 All business logic paths in the game engine MUST have unit test coverage.
@@ -49,176 +45,135 @@ All business logic paths in the game engine MUST have unit test coverage.
 ### III. Incremental Delivery
 
 Each feature MUST be deliverable as a working, playable increment.
-Partial implementations that leave the game in a broken state MUST NOT be merged to `master`.
-User stories MUST be ordered by priority and MUST each be independently testable without
-requiring sibling stories to be complete.
+Partial implementations that leave the game broken MUST NOT be merged to `master`.
+User stories MUST be ordered by priority and independently testable.
 
 ### IV. Simplicity Over Abstraction
 
-YAGNI applies strictly: no layer of abstraction MUST be introduced without a concrete,
-present-day requirement.
+YAGNI applies strictly: no abstraction without a concrete, present-day requirement.
 Three similar code paths are preferable to a premature helper.
-Complexity MUST be justified in the plan's Complexity Tracking section before introduction.
+Complexity MUST be justified in the plan's Complexity Tracking section.
 
 ### V. Learning-First
 
-As a self-education project, clarity of code and explicitness of decisions take precedence
-over brevity or cleverness.
-Decisions MUST be documented in the relevant plan or spec so that future sessions can
-understand WHY a choice was made, not just what was chosen.
+Clarity and explicitness take precedence over brevity or cleverness.
+Decisions MUST be documented in the relevant plan or spec so future sessions understand WHY.
 
 ### VI. Testing Scope
 
-CSS and visual-style tests (snapshot tests, pixel comparisons, computed-style assertions)
-MUST NOT be written or generated unless the user explicitly requests them for a feature.
-All other testable logic — game rules, state transitions, score calculation, DOM structure
-for accessibility — follows Principle II (TDD-first).
-Tasks files MUST NOT include CSS test tasks by default; they MAY be added only when the
-feature spec or the user explicitly calls for them.
+CSS and visual-style tests MUST NOT be written unless explicitly requested.
+All other testable logic follows Principle II (TDD-first).
+Tasks files MUST NOT include CSS test tasks by default.
 
 ### VII. React Architecture
 
-The UI layer MUST follow idiomatic React patterns. The following rules are non-negotiable
-and apply to every feature that touches React code.
+**Composition**: Components MUST be composed from smaller, single-purpose pieces.
+Class inheritance for UI is prohibited. Shared behaviour via composition (props/children/render props).
 
-**Composition**
-- Components MUST be composed from smaller, single-purpose pieces; class inheritance for
-  UI components is prohibited.
-- Shared behaviour MUST be expressed through composition (passing components as props,
-  children, or render props) rather than through wrapper chains or HOC pyramids.
+**Component granularity**: One responsibility per component. If describing it requires "and", split it.
+Presentational components MUST be free of business logic.
 
-**Component granularity**
-- Each component MUST have one clearly named responsibility. If describing what a component
-  does requires the word "and", it MUST be split.
-- Presentational components MUST be free of business logic; container/hook layers own
-  data-fetching and state.
+**Hook extraction**: Non-trivial logic MUST be extracted into a named custom hook (`use*`).
+Hooks MUST be independently testable via `renderHook`. Component files MUST NOT exceed ~100 lines
+before extraction is reconsidered.
 
-**Hook extraction**
-- Any logic beyond trivial JSX branching (conditional render, list map) MUST be extracted
-  into a named custom hook.
-- Custom hooks MUST follow the `use*` naming convention and MUST be independently testable
-  via React Testing Library's `renderHook`.
-- A component file MUST NOT grow beyond ~100 lines before hook/component extraction
-  is reconsidered.
+**Re-render hygiene (NON-NEGOTIABLE)**:
+- No inline object/function literals as props — stabilise with `useMemo`/`useCallback` or define outside render.
+- Unnecessary re-renders MUST be wrapped in `React.memo` with a documented justification.
+- State MUST be colocated at the lowest component that needs it.
+- Context MUST be split by update frequency.
+- Before merging, verify with React DevTools Profiler that no component re-renders more than
+  once per user interaction without documented justification.
 
-**Re-render hygiene (NON-NEGOTIABLE)**
-- Object and function literals MUST NOT be created inline as props; they MUST be stabilised
-  with `useMemo` / `useCallback` or defined outside the render path.
-- Components that receive stable props but re-render unnecessarily MUST be wrapped in
-  `React.memo` with a documented justification comment.
-- State MUST be colocated at the lowest component that needs it; lifting state higher than
-  necessary is a violation requiring a Complexity Tracking entry.
-- React Context MUST be split by update frequency: a context that changes frequently
-  (e.g. current tile positions) MUST NOT share a Provider with low-frequency data
-  (e.g. theme, game config).
-- Before merging any feature, the author MUST verify with React DevTools Profiler (or
-  equivalent) that no component re-renders more than once per user interaction without
-  documented justification.
+### VIII. Artifact Brevity
+
+All generated artifacts (plans, specs, task lists, checklists) MUST be as short as possible
+without losing actionable context.
+
+- Strip explicit duplications and over-wide explanations.
+- Keep everything needed for an efficient result.
+- Do NOT trim content that would require re-derivation during implementation.
+
+### IX. Layered Architecture
+
+Code MUST be organised into layers by scope and domain. Each layer MUST be isolated and
+agnostic to implementation details of other layers.
+
+- Tools, utilities, and modules MUST live in the layer appropriate to their need:
+  domain logic in the engine layer, UI concerns in the component layer, state
+  orchestration in the hook layer.
+- Layers MAY be domain-based (e.g., `engine/`, `ui/`) or feature-scoped when a feature
+  warrants its own isolated subtree.
+- Layers MUST communicate through established TypeScript interfaces or types — no
+  direct cross-layer implementation imports that bypass the defined contract.
+- A module MUST NOT reach across layer boundaries except through its declared public API.
 
 ## Technology Stack
 
-**Framework**: React 18+ — functional components and hooks only; class components are prohibited.
-**Language**: TypeScript — mandatory; `"strict": true` MUST be set in `tsconfig.json`; no plain JS.
-**Styling**: CSS Modules or raw CSS — no CSS-in-JS libraries, no utility-class frameworks.
+**Framework**: React 18+ — functional components and hooks only; class components prohibited.
+**Language**: TypeScript — mandatory; `"strict": true` MUST be in `tsconfig.json`.
+**Styling**: CSS Modules or raw CSS — no CSS-in-JS, no utility-class frameworks.
 **Bundler**: Vite with `@vitejs/plugin-react`.
 **Test runner**: Vitest with jsdom environment.
 
 ### Dependency Whitelist (NON-NEGOTIABLE)
 
 No package outside this whitelist MAY be installed without a constitution amendment.
-Any PR that adds an unlisted dependency MUST be blocked until the constitution is updated.
 
-**Runtime dependencies** (exact list):
-- `react`
-- `react-dom`
-- `@types/react`
-- `@types/react-dom`
-- `@vitejs/plugin-react`
+**Runtime**: `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`
 
-**Dev dependencies — testing** (exact list):
-- `vitest`
-- `jsdom`
-- `@testing-library/react`
-- `@testing-library/jest-dom`
+**Dev/test**: `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`
 
-All other packages — utility libraries, component libraries, state managers, routers,
-animation libraries, icon sets, date libraries, etc. — are prohibited without amendment.
-Rationale: this is a self-education project; building from primitives is the learning goal.
+All other packages are prohibited without amendment.
 
 **Constraints**:
-- MUST run in a modern evergreen browser without a server (static files only for gameplay).
-- Tests MUST be runnable from the terminal via `npx vitest run`.
+- MUST run in a modern evergreen browser without a server.
+- Tests MUST be runnable via `npx vitest run`.
 
 ## Hosting & Deployment
 
-**Platform**: GitHub Pages
-**Live URL**: `https://v-sokolov.github.io/2048-game`
-**Source**: `master` branch — every merge triggers an automatic redeploy.
-**Mechanism**: GitHub Actions workflow at `.github/workflows/deploy.yml`
-  - Trigger: `on: push: branches: [master]`
-  - Build: `vite build` → output in `dist/`
-  - Deploy: `dist/` published to GitHub Pages via the `actions/deploy-pages` action family.
+**Platform**: GitHub Pages — `https://v-sokolov.github.io/2048-game`
+**Source**: `master` — every merge triggers an automatic redeploy via `.github/workflows/deploy.yml`.
+- Trigger: `on: push: branches: [master]`
+- Build: `vite build` → `dist/`
+- Deploy: `dist/` via `actions/deploy-pages`
 
 **Hard constraints**:
-- `vite.config.ts` MUST set `base: '/2048-game/'` at all times. Without this, all
-  bundled assets (JS, CSS, images) will 404 at the subpath. This value MUST NOT be
-  removed or changed without a constitution amendment.
-- The deploy workflow file (`.github/workflows/deploy.yml`) is CI/CD infrastructure
-  and is exempt from the package dependency whitelist — it installs no runtime deps.
-- No other hosting target or manual deployment process is permitted; GitHub Pages is
-  the single source of truth for the live build.
+- `vite.config.ts` MUST set `base: '/2048-game/'` at all times. MUST NOT be removed or changed
+  without a constitution amendment.
+- No other hosting target or manual deployment process is permitted.
 
 ## Development Workflow
 
 **Feature lifecycle — every step is mandatory in order:**
 
-1. Create a dedicated feature branch via `/speckit-git-feature` (one branch per feature;
-   work from multiple features MUST NOT share a branch).
-2. Run the full spec pipeline: `/speckit-specify` → `/speckit-plan` → `/speckit-tasks`.
-3. Apply the TDD cycle (Principle II) before writing any implementation code.
-4. Verify Principle VII (React Architecture) compliance, including the DevTools Profiler
-   check, before the feature is considered complete.
-5. Ensure the game remains playable; no half-states MUST be committed to the feature branch.
-6. Open a PR targeting `master` with a minimal description (what the feature does; why it
-   was built). No approval workflow is required (solo project), but the author MUST re-read
-   the full diff before merging.
-7. Merge the PR into `master`.
-8. **Do NOT delete the feature branch** after merging — branches are retained as a permanent
-   record of each feature's development history.
-9. Switch to `master` and pull latest: `git checkout master && git pull`.
-   GitHub Actions will automatically trigger a redeploy to GitHub Pages on the push
-   that resulted from the merge — no manual deploy step is required.
+1. Create a dedicated feature branch via `/speckit-git-feature`.
+2. Run `/speckit-specify` → `/speckit-plan` → `/speckit-tasks`.
+3. Apply TDD (Principle II) before writing any implementation code.
+4. Verify Principle VII compliance including the DevTools Profiler check.
+5. Ensure the game remains playable; no half-states committed to the feature branch.
+6. Open a PR to `master` with a minimal description. Re-read the full diff before merging.
+7. Merge the PR.
+8. **Do NOT delete the feature branch** — retained as permanent history.
+9. `git checkout master && git pull`. GitHub Actions redeploys automatically.
 
 ## Reference Materials
 
-These are local-only intro-requirement documents that inform feature design and game rules.
-They live under `docs/` which is gitignored — they are never committed. Feature specs and
-plans SHOULD be cross-checked against these sources before finalising requirements.
+Local-only files under `docs/` (gitignored). Cross-check these before finalising feature specs.
 
 | File | Purpose |
 |------|---------|
-| `docs/superpowers/specs/2026-06-21-2048-game-logic-design.md` | Detailed game logic specification: movement, merging rules, one-merge-per-tile, scoring — primary reference for Principle I implementation |
-| `docs/superpowers/specs/2048.pdf` | Original 2048 game reference document / rules |
-| `docs/superpowers/specs/FE test.fig` | Figma design file — frontend UI layout and component structure reference |
-| `docs/superpowers/specs/FE test.pdf` | PDF export of the frontend design for offline review |
-
-These documents are works-in-progress and will be updated over time. They are not
-authoritative until explicitly promoted into a feature spec via `/speckit-specify`.
+| `docs/superpowers/specs/2026-06-21-2048-game-logic-design.md` | Game logic spec: movement, merging, scoring |
+| `docs/superpowers/specs/2048.pdf` | Original 2048 rules reference |
+| `docs/superpowers/specs/FE test.fig` | Figma UI design |
+| `docs/superpowers/specs/FE test.pdf` | PDF export of the Figma design |
 
 ## Governance
 
 This constitution supersedes all other informal practices in this repository.
-Amendments require:
-1. A clear rationale.
-2. A version bump following semantic versioning (MAJOR/MINOR/PATCH rules defined in the
-   `speckit-constitution` workflow).
-3. An updated Sync Impact Report in this file.
-4. Any affected templates updated in the same commit.
+Amendments require: (1) clear rationale, (2) semver bump, (3) updated Sync Impact Report,
+(4) affected templates updated in the same commit.
 
-All feature plans MUST include a Constitution Check section verifying compliance with
-Principles I–VII before Phase 0 research begins.
+All feature plans MUST include a Constitution Check (I–IX) before Phase 0 research.
 
-Runtime development guidance lives in `CLAUDE.md` and referenced plan files.
-Complexity violations MUST be tracked in the plan's Complexity Tracking table.
-
-**Version**: 1.6.0 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-21
+**Version**: 1.8.0 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-21
