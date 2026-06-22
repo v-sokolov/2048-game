@@ -1,0 +1,31 @@
+.undo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  background: #fbefdf;
+  box-shadow:
+    inset -2px -2px 2px rgba(0, 0, 0, 0.08),
+    inset 2px 2px 1px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: var(--transition-base), opacity 0.1s;
+}
+
+.undo:hover:not(:disabled) {
+  background: #fff6e9;
+}
+
+.undo:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.icon {
+  display: block;
+  width: 24px;
+  height: auto;
+}

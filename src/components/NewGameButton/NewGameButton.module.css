@@ -1,0 +1,22 @@
+.newGame {
+  border: none;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  background: var(--color-brand);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.newGame:hover {
+  background: var(--color-brand-dark);
+}
+
+.newGame:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
