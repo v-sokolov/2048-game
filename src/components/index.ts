@@ -1,0 +1,9 @@
+export { GameOverlay } from './GameOverlay/GameOverlay';
+export { GridArea } from './GridArea/GridArea';
+export { Logo } from './Logo/Logo';
+export { NewGameButton } from './NewGameButton/NewGameButton';
+export { Note } from './Note/Note';
+export { Playground } from './Playground/Playground';
+export { Score } from './Score/Score';
+export { Tile } from './Tile/Tile';
+export { UndoButton } from './UndoButton/UndoButton';

@@ -1,20 +1,15 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.7.0 → 1.8.0 (MINOR: new Principle IX — Layered Architecture)
+Version change: 1.8.1 → 1.8.2 (PATCH: dependency whitelist amendment — @testing-library/dom)
 
-Modified principles: N/A
+Modified principles: Dependency Whitelist — added @testing-library/dom (peer of @testing-library/react)
 
-Added sections:
-  - Principle IX. Layered Architecture — tools/utils placed in layers by scope;
-    isolation preferred; layers communicate through established interfaces;
-    layers may be domain-based or feature-scoped
+Added sections: N/A
 
 Removed sections: N/A
 
-Templates updated:
-  ✅ .specify/templates/plan-template.md — Constitution Check updated (I–IX)
-  ✅ .specify/templates/tasks-template.md — no structural changes needed
+Templates updated: N/A (whitelist-only change)
 
 Follow-up TODOs: none
 -->
@@ -122,7 +117,9 @@ No package outside this whitelist MAY be installed without a constitution amendm
 
 **Runtime**: `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`
 
-**Dev/test**: `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`
+**Dev/test**: `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/dom`
+
+**Build tools**: `vite-plugin-svgr` — SVG-as-React-component imports (`?react` suffix)
 
 All other packages are prohibited without amendment.
 
@@ -176,4 +173,4 @@ Amendments require: (1) clear rationale, (2) semver bump, (3) updated Sync Impac
 
 All feature plans MUST include a Constitution Check (I–IX) before Phase 0 research.
 
-**Version**: 1.8.0 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-21
+**Version**: 1.8.2 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-22

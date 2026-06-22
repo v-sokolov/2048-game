@@ -1,0 +1,6 @@
+.logo {
+  font-size: clamp(2.25rem, 1.5rem + 2vw, 3.5rem);
+  font-weight: 800;
+  color: var(--color-brand);
+  line-height: 1;
+}

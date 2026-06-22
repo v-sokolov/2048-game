@@ -1,0 +1,17 @@
+.grid {
+  --gap: 4px;
+  /* Per-cell edge length: (board − 2·padding − 3·gaps) / 4.
+     Derived from the shared --board-width (set on Playground); 
+     tiles read it for a proportional font-size. */
+  --cell-size: calc((var(--board-width, 460px) - 5 * var(--gap)) / 4);
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+  padding: var(--gap);
+  width: var(--board-width, 460px);
+  aspect-ratio: 1;
+  background: #ece0cb;
+  border-radius: 16px;
+  position: relative;
+}
