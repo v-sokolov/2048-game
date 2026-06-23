@@ -1,4 +1,4 @@
-import type { GameState } from "../services/engine";
+import type { GameState } from "@services/engine";
 
 export interface ReducerState {
   readonly game: GameState;

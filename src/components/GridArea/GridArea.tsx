@@ -1,5 +1,5 @@
 import { memo, type CSSProperties } from "react";
-import { BOARD_SIZE, type Tile as TileData } from "../../services/engine";
+import { BOARD_SIZE, type Tile as TileData } from "@services/engine";
 import { Tile } from "..";
 import styles from "./GridArea.module.css";
 

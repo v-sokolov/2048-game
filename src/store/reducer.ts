@@ -3,7 +3,7 @@ import {
   type GameStatus,
   isLost,
   isWon,
-} from "../services/engine";
+} from "@services/engine";
 import type { Action, ReducerState } from "./actions";
 
 function nextStatus(prevStatus: GameStatus, board: GameState): GameStatus {

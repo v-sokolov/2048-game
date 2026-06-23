@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import type { Direction } from "../services/engine";
+import type { Direction } from "@services/engine";
 
-// Input-source-agnostic mapping. Phase 1: keyboard arrows.
-// Phase 2 (designed-for): touchstart/touchend swipe vector → nearest Direction.
 const KEY_TO_DIRECTION: Record<string, Direction> = {
   ArrowUp: "up",
   ArrowDown: "down",
@@ -10,16 +8,18 @@ const KEY_TO_DIRECTION: Record<string, Direction> = {
   ArrowRight: "right",
 };
 
-export function useInputDirection(onMove: (dir: Direction) => void): void {
+// Keyboard arrow input on window → onMove.
+export function useKeyboardInput(onMove: (dir: Direction) => void): void {
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      const dir = KEY_TO_DIRECTION[event.key];
-      if (!dir) {
+      const direction = KEY_TO_DIRECTION[event.key];
+
+      if (!direction) {
         return;
       }
 
       event.preventDefault();
-      onMove(dir);
+      onMove(direction);
     };
 
     window.addEventListener("keydown", handler);

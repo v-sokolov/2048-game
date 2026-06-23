@@ -1,6 +1,6 @@
 import { type Dispatch, useEffect, useReducer } from "react";
-import { createInitialState } from "../services/engine";
-import { createLocalStorage } from "../services/storage/storage";
+import { createInitialState } from "@services/engine";
+import { createLocalStorage } from "@services/storage/storage";
 import type { Action, ReducerState } from "./actions";
 import { reducer } from "./reducer";
 
