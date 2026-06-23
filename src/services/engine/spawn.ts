@@ -1,5 +1,5 @@
 import { newId } from "./id";
-import { Cell, getEmptyCells } from "./grid";
+import { Cell, findEmptyCells } from "./grid";
 import type { GameState, Tile } from "./types";
 
 export const PROBABILITY_OF_FOUR = 0.1;
@@ -19,7 +19,7 @@ export function spawn(state: GameState): {
   state: GameState;
   spawned: Tile | null;
 } {
-  const emptyCells = getEmptyCells(state.tiles);
+  const emptyCells = findEmptyCells({ tiles: state.tiles });
   const isFullBoard = emptyCells.length === 0;
 
   if (isFullBoard) {

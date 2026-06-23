@@ -2,39 +2,89 @@ import { BOARD_SIZE, type Tile } from "./types";
 
 export type Cell = { row: number; col: number };
 
-/** A fresh BOARD_SIZE×BOARD_SIZE grid of nulls — every row is its own array. */
-function createEmptyGrid(): (Tile | null)[][] {
-  return Array.from({ length: BOARD_SIZE }, () =>
-    Array<Tile | null>(BOARD_SIZE).fill(null),
-  );
-}
+/** Called for each cell during a forEachCell walk; `cell` is `undefined` when empty. */
+type OnCell<T> = (cell: T | undefined, row: number, col: number) => void;
 
 /**
- * Lay the tile list onto a row/col grid for spatial logic; empty cells are null.
- * A throwaway view — the Tile[] stays the source of truth, emptiness is derived.
+ * A transient, mutable N×N grid addressed by (row, col), backed by one flat
+ * row-major array; an absent cell reads as `undefined`. Scratch only —
+ * GameState's Tile[] is the source of truth, never a Grid.
  */
-export function buildGrid(tiles: readonly Tile[]): (Tile | null)[][] {
-  const grid = createEmptyGrid();
+export class Grid<T> {
+  private readonly cellsByIndex: (T | undefined)[];
+
+  constructor(readonly sideLength: number) {
+    this.cellsByIndex = new Array<T | undefined>(sideLength * sideLength);
+  }
+
+  isWithinBounds({ row, col }: Cell): boolean {
+    const rowWithinBounds = row >= 0 && row < this.sideLength;
+    const colWithinBounds = col >= 0 && col < this.sideLength;
+    return rowWithinBounds && colWithinBounds;
+  }
+
+  /** Flat row-major position of (row, col) in cellsByIndex. */
+  private cellIndex({ row, col }: Cell): number {
+    return row * this.sideLength + col;
+  }
+
+  /** The cell at (row, col); `undefined` when empty OR off-grid, so callers need no edge guards. */
+  getCellAt(cell: Cell): T | undefined {
+    if (!this.isWithinBounds(cell)) {
+      return undefined;
+    }
+
+    return this.cellsByIndex[this.cellIndex(cell)];
+  }
+
+  setCellAt({ row, col, value }: Cell & { value: T | undefined }): void {
+    this.cellsByIndex[this.cellIndex({ row, col })] = value;
+  }
+
+  /** Visit every cell in row-major order. */
+  forEachCell(onCell: OnCell<T>): void {
+    for (let row = 0; row < this.sideLength; row++) {
+      for (let col = 0; col < this.sideLength; col++) {
+        const cell = this.cellsByIndex[this.cellIndex({ row, col })];
+        onCell(cell, row, col);
+      }
+    }
+  }
+}
+
+/** Materialize the tile list into a spatial grid; a throwaway view rebuilt each move. */
+export function buildGridFromTiles({
+  tiles,
+  sideLength = BOARD_SIZE,
+}: {
+  tiles: readonly Tile[];
+  sideLength?: number;
+}): Grid<Tile> {
+  const grid = new Grid<Tile>(sideLength);
 
   for (const tile of tiles) {
-    grid[tile.row][tile.col] = tile;
+    grid.setCellAt({ row: tile.row, col: tile.col, value: tile });
   }
 
   return grid;
 }
 
-/** Cells holding no tile, in row-major order. Derived from the grid. */
-export function getEmptyCells(tiles: readonly Tile[]): Cell[] {
-  const grid = buildGrid(tiles);
-  const cells: Cell[] = [];
+/** Every cell holding no tile, in row-major order. */
+export function findEmptyCells({
+  tiles,
+  sideLength = BOARD_SIZE,
+}: {
+  tiles: readonly Tile[];
+  sideLength?: number;
+}): Cell[] {
+  const grid = buildGridFromTiles({ tiles, sideLength });
+  const emptyCells: Cell[] = [];
 
-  for (let row = 0; row < BOARD_SIZE; row++) {
-    for (let col = 0; col < BOARD_SIZE; col++) {
-      if (!grid[row][col]) {
-        cells.push({ row, col });
-      }
+  grid.forEachCell((tile, row, col) => {
+    if (!tile) {
+      emptyCells.push({ row, col });
     }
-  }
+  });
 
-  return cells;
+  return emptyCells;
 }
