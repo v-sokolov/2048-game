@@ -1,15 +1,18 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.8.1 → 1.8.2 (PATCH: dependency whitelist amendment — @testing-library/dom)
+Version change: 1.8.2 → 1.9.0 (MINOR: formalized a named "Finish Flow (Spec Completion)")
 
-Modified principles: Dependency Whitelist — added @testing-library/dom (peer of @testing-library/react)
+Modified principles: none
 
-Added sections: N/A
+Added sections: Development Workflow → "Finish Flow (Spec Completion)" subsection —
+formalizes the prior lifecycle steps 6–9 as a named, ordered, referenceable flow
+(PR with minimal description → merge → do NOT delete branch → checkout master → pull)
 
 Removed sections: N/A
 
-Templates updated: N/A (whitelist-only change)
+Templates updated: N/A (workflow/governance prose only; no Constitution Check or
+principle changes, so plan/spec/tasks templates are unaffected)
 
 Follow-up TODOs: none
 -->
@@ -149,10 +152,18 @@ All other packages are prohibited without amendment.
 3. Apply TDD (Principle II) before writing any implementation code.
 4. Verify Principle VII compliance including the DevTools Profiler check.
 5. Ensure the game remains playable; no half-states committed to the feature branch.
-6. Open a PR to `master` with a minimal description. Re-read the full diff before merging.
-7. Merge the PR.
-8. **Do NOT delete the feature branch** — retained as permanent history.
-9. `git checkout master && git pull`. GitHub Actions redeploys automatically.
+6. Complete the **Finish Flow** below.
+
+### Finish Flow (Spec Completion)
+
+When a feature is implemented and verified, finish it via this exact, ordered path.
+The order is NON-NEGOTIABLE and MUST NOT be reordered or abbreviated:
+
+1. **Open a PR to `master`** with a *minimal* description. Re-read the full diff before merging.
+2. **Merge the PR.**
+3. **Do NOT delete the feature branch** — it is retained as permanent history.
+4. **Switch to master**: `git checkout master`.
+5. **Pull**: `git pull` — GitHub Actions then redeploys automatically (see Hosting & Deployment).
 
 ## Reference Materials
 
@@ -173,4 +184,4 @@ Amendments require: (1) clear rationale, (2) semver bump, (3) updated Sync Impac
 
 All feature plans MUST include a Constitution Check (I–IX) before Phase 0 research.
 
-**Version**: 1.8.2 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-22
+**Version**: 1.9.0 | **Ratified**: 2026-06-21 | **Last Amended**: 2026-06-23
