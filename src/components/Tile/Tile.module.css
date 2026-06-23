@@ -62,9 +62,3 @@
   );
   color: #ffffff;
 }
-:global(.tile--empty) {
-  background: #f5e3cf;
-  box-shadow:
-    inset -1px -1px 1px #e5cfb3,
-    inset 1px 1px 1px rgba(255, 255, 255, 0.2);
-}
