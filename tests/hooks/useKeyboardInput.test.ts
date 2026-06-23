@@ -1,15 +1,15 @@
 import { renderHook } from "@testing-library/react";
 import { vi } from "vitest";
-import { useInputDirection } from "@/hooks/useInputDirection";
+import { useKeyboardInput } from "@/hooks/input/useKeyboardInput";
 
 function press(key: string) {
   window.dispatchEvent(new KeyboardEvent("keydown", { key }));
 }
 
-describe("useInputDirection", () => {
+describe("useKeyboardInput", () => {
   it("maps arrow keys to directions", () => {
     const onMove = vi.fn();
-    renderHook(() => useInputDirection(onMove));
+    renderHook(() => useKeyboardInput(onMove));
     press("ArrowUp");
     press("ArrowDown");
     press("ArrowLeft");
@@ -19,7 +19,7 @@ describe("useInputDirection", () => {
 
   it("ignores non-direction keys", () => {
     const onMove = vi.fn();
-    renderHook(() => useInputDirection(onMove));
+    renderHook(() => useKeyboardInput(onMove));
     press("Enter");
     press("w");
     press("x");
@@ -28,7 +28,7 @@ describe("useInputDirection", () => {
 
   it("removes its listener on unmount", () => {
     const onMove = vi.fn();
-    const { unmount } = renderHook(() => useInputDirection(onMove));
+    const { unmount } = renderHook(() => useKeyboardInput(onMove));
     unmount();
     press("ArrowUp");
     expect(onMove).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import type { GameStatus } from "../../services/engine";
+import type { GameStatus } from "@services/engine";
 import styles from "./GameOverlay.module.css";
 
 interface GameOverlayProps {

@@ -8,7 +8,7 @@ import {
   GameOverlay,
   Note,
 } from "..";
-import { useGame } from "../../hooks/useGame";
+import { useGame } from "@hooks/useGame";
 import styles from "./App.module.css";
 
 export function App() {
@@ -18,6 +18,7 @@ export function App() {
     bestScore,
     status,
     isEmptyHistory,
+    boardRef,
     handleUndo,
     handleNewGame,
   } = useGame();
@@ -40,7 +41,7 @@ export function App() {
         same number merge into one when they touch - combine them to reach 2048!
       </Note>
 
-      <div className={styles.board}>
+      <div className={styles.board} ref={boardRef}>
         <GridArea tiles={tiles} />
         <GameOverlay status={status} onNewGame={handleNewGame} />
       </div>
