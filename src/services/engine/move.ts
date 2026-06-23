@@ -1,5 +1,5 @@
 import { newId } from "./id";
-import { buildGrid } from "./grid";
+import { buildGridFromTiles, type Grid } from "./grid";
 import { BOARD_SIZE } from "./types";
 import type {
   Direction,
@@ -15,16 +15,18 @@ interface Slot {
   value: number;
   merge?: { sourceIds: [string, string] };
 }
+// One destination-first line read off the grid; an empty cell is undefined.
+type Line = Array<Tile | undefined>;
 
 /**
  * Collapse one destination-first line (see cellFor): drop gaps, then merge
  * equal neighbours with the one-merge-per-tile lock. Pure.
  */
-function collapseLine(line: ReadonlyArray<Tile | null>): {
+function collapseLine(line: Line): {
   slots: Slot[];
   gained: number;
 } {
-  const input = line.filter((tile): tile is Tile => tile !== null);
+  const input = line.filter((tile): tile is Tile => tile !== undefined);
   const slots: Slot[] = [];
   let gained = 0;
 
@@ -50,12 +52,14 @@ function collapseLine(line: ReadonlyArray<Tile | null>): {
   return { slots, gained };
 }
 
+interface CellForArgs {
+  dir: Direction;
+  lineIndex: number;
+  position: number;
+}
+
 /** Map a line index + position to [row, col]. Position is destination-first: 0 is the edge tiles slide toward. */
-function cellFor(
-  dir: Direction,
-  lineIndex: number,
-  position: number,
-): [number, number] {
+function cellFor({ dir, lineIndex, position }: CellForArgs): [number, number] {
   const last = BOARD_SIZE - 1;
   switch (dir) {
     case "left":
@@ -69,31 +73,42 @@ function cellFor(
   }
 }
 
+interface ReadLineArgs {
+  grid: Grid<Tile>;
+  dir: Direction;
+  lineIndex: number;
+}
+
 /** Read one destination-first line off the grid (see cellFor). */
-function readLine(
-  grid: (Tile | null)[][],
-  dir: Direction,
-  lineIndex: number,
-): (Tile | null)[] {
-  const line: (Tile | null)[] = [];
+function readLine({ grid, dir, lineIndex }: ReadLineArgs): Line {
+  const line: Line = [];
   for (let position = 0; position < BOARD_SIZE; position++) {
-    const [row, col] = cellFor(dir, lineIndex, position);
-    line.push(grid[row][col]);
+    const [row, col] = cellFor({ dir, lineIndex, position });
+    const tile = grid.getCellAt({ row, col });
+    line.push(tile);
   }
   return line;
 }
 
+interface PlaceSlotsArgs {
+  slots: Slot[];
+  dir: Direction;
+  lineIndex: number;
+  newTiles: Tile[];
+  merges: MergeEvent[];
+}
+
 /** Place a collapsed line's slots back onto the board, emitting tiles and merge events. */
-function placeSlots(
-  slots: Slot[],
-  dir: Direction,
-  lineIndex: number,
-  newTiles: Tile[],
-  merges: MergeEvent[],
-): void {
+function placeSlots({
+  slots,
+  dir,
+  lineIndex,
+  newTiles,
+  merges,
+}: PlaceSlotsArgs): void {
   for (let position = 0; position < slots.length; position++) {
     const slot = slots[position];
-    const [row, col] = cellFor(dir, lineIndex, position);
+    const [row, col] = cellFor({ dir, lineIndex, position });
     newTiles.push({ id: slot.id, value: slot.value, row, col });
     if (slot.merge) {
       merges.push({
@@ -128,19 +143,19 @@ export function move(
   state: GameState,
   dir: Direction,
 ): { state: GameState; result: MoveResult } {
-  const grid = buildGrid(state.tiles);
+  const grid = buildGridFromTiles({ tiles: state.tiles });
   const newTiles: Tile[] = [];
   const merges: MergeEvent[] = [];
   let gained = 0;
 
   for (let lineIndex = 0; lineIndex < BOARD_SIZE; lineIndex++) {
     const { slots, gained: lineGained } = collapseLine(
-      readLine(grid, dir, lineIndex),
+      readLine({ grid, dir, lineIndex }),
     );
 
     gained += lineGained;
 
-    placeSlots(slots, dir, lineIndex, newTiles, merges);
+    placeSlots({ slots, dir, lineIndex, newTiles, merges });
   }
 
   // Valid iff a merge happened (tile count dropped) or some tile slid.

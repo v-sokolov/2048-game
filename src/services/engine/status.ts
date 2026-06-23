@@ -1,4 +1,4 @@
-import { buildGrid } from "./grid";
+import { buildGridFromTiles } from "./grid";
 import { BOARD_SIZE, type GameState, WIN_VALUE } from "./types";
 
 /** True once any tile has reached the win threshold (2048) - O(tiles). */
@@ -15,23 +15,16 @@ export function isLost(state: GameState): boolean {
     return false;
   }
 
-  const grid = buildGrid(state.tiles);
-
-  function valueAt(row: number, col: number) {
-    return grid[row][col]?.value;
-  }
+  const grid = buildGridFromTiles({ tiles: state.tiles });
 
   for (let row = 0; row < BOARD_SIZE; row++) {
     for (let col = 0; col < BOARD_SIZE; col++) {
-      const currentValue = valueAt(row, col);
+      const value = grid.getCellAt({ row, col })?.value;
 
-      // Right + below visit every adjacent pair exactly once; left/up are symmetric duplicates.
-      const rightValue =
-        col + 1 < BOARD_SIZE ? valueAt(row, col + 1) : undefined;
-      const belowValue =
-        row + 1 < BOARD_SIZE ? valueAt(row + 1, col) : undefined;
-      const hasEqualNeighbour =
-        currentValue === rightValue || currentValue === belowValue;
+      // Right + below cover every adjacent pair once (left/up mirror them).
+      const rightValue = grid.getCellAt({ row, col: col + 1 })?.value;
+      const belowValue = grid.getCellAt({ row: row + 1, col })?.value;
+      const hasEqualNeighbour = value === rightValue || value === belowValue;
 
       if (hasEqualNeighbour) {
         return false;
