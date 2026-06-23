@@ -8,14 +8,16 @@ interface UndoButtonProps {
 
 export function UndoButton({ onClick, isDisabled }: UndoButtonProps) {
   return (
-    <button
-      type="button"
-      className={styles.undo}
-      onClick={onClick}
-      disabled={isDisabled}
-      aria-label="Undo"
-    >
-      <UndoIcon className={styles.icon} aria-hidden="true" />
-    </button>
+    <div className={styles.platform}>
+      <button
+        type="button"
+        className={styles.undo}
+        onClick={onClick}
+        disabled={isDisabled}
+        aria-label="Undo"
+      >
+        <UndoIcon className={styles.icon} aria-hidden="true" />
+      </button>
+    </div>
   );
 }

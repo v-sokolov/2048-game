@@ -1,15 +1,12 @@
 .grid {
-  /* Board side length (N×N). 
-     Single source of truth for CSS layout.
-     Keep in sync with BOARD_SIZE in the engine. 
-  */
+  /* Keep in sync with BOARD_SIZE in the engine. */
   --board-size: 4;
   --gap: 4px;
-  /* board − padding (2 gaps) − inner gaps (N−1) = subtract (N+1) gaps, then / N */
   --cell-size: calc(
     (var(--board-width, 460px) - (var(--board-size) + 1) * var(--gap)) /
       var(--board-size)
   );
+
   position: relative;
   width: var(--board-width, 460px);
   aspect-ratio: 1;
@@ -28,8 +25,11 @@
 }
 
 .cell {
-  border-radius: var(--radius, 8px);
-  background: rgba(238, 228, 218, 0.45);
+  border-radius: var(--radius);
+  background: #f5e3cf;
+  box-shadow:
+    inset 1px 1px 1px rgba(255, 255, 255, 0.2),
+    inset -1px -1px 1px #e5cfb3;
 }
 
 .tileLayer {
@@ -41,11 +41,6 @@
   position: absolute;
   width: var(--cell-size);
   height: var(--cell-size);
-  /* 
-  * Slide animation "for free": 
-  * a tile keeps its id (React key) across a move,
-  * so a changed --row/--col just transitions the transform. 
-  */
   transform: translate(
     calc(var(--col) * (var(--cell-size) + var(--gap))),
     calc(var(--row) * (var(--cell-size) + var(--gap)))

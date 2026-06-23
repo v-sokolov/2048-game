@@ -22,6 +22,8 @@ export function App() {
     handleNewGame,
   } = useGame();
 
+  const isGameOver = status === "lost";
+
   return (
     <Playground>
       <header className={styles.header}>
@@ -43,7 +45,10 @@ export function App() {
         <GameOverlay status={status} onNewGame={handleNewGame} />
       </div>
 
-      <UndoButton onClick={handleUndo} isDisabled={isEmptyHistory} />
+      <UndoButton
+        onClick={handleUndo}
+        isDisabled={isEmptyHistory || isGameOver}
+      />
 
       <Note>
         Made by Vitalii Sokolov.{" "}

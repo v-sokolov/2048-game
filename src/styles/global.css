@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("./fonts/manrope-latin.woff2") format("woff2");
+}
+
 :root {
   font-family:
     "Manrope",
@@ -13,8 +21,10 @@
 
   --color-brand: #795f3b;
   --color-brand-dark: #6b5432;
+  --color-brand-hover: #a38b67;
   --color-text-secondary: #a38b67;
   --radius: 12px;
+  --shadow-ambient: 0 12px 30px rgba(149, 105, 64, 0.22);
   --transition-base: background 0.1s;
 
   letter-spacing: 0.02em;
