@@ -31,5 +31,9 @@
 }
 
 .action:hover {
-  background: var(--color-brand-dark);
+  background: var(--color-brand-hover);
+}
+
+.action:active {
+  background: #ae9979;
 }

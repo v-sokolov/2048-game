@@ -13,7 +13,11 @@
 }
 
 .newGame:hover {
-  background: var(--color-brand-dark);
+  background: var(--color-brand-hover);
+}
+
+.newGame:active {
+  background: #ae9979;
 }
 
 .newGame:disabled {
