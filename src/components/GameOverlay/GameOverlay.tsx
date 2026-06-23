@@ -1,19 +1,23 @@
+import type { GameStatus } from "../../services/engine";
 import styles from "./GameOverlay.module.css";
 
 interface GameOverlayProps {
-  variant: "lose" | "win";
-  onAction: () => void;
+  status: GameStatus;
+  onNewGame: () => void;
 }
 
-export function GameOverlay({ variant, onAction }: GameOverlayProps) {
-  const message = variant === "lose" ? "Game Over!" : "You Win!";
-  const actionLabel = variant === "lose" ? "Try Again" : "Continue";
+export function GameOverlay({ status, onNewGame }: GameOverlayProps) {
+  if (status === "playing") {
+    return null;
+  }
+
+  const message = status === "won" ? "You Win!" : "Game Over!";
 
   return (
     <div className={styles.overlay}>
       <p className={styles.message}>{message}</p>
-      <button className={styles.action} onClick={onAction}>
-        {actionLabel}
+      <button className={styles.action} onClick={onNewGame}>
+        New Game
       </button>
     </div>
   );

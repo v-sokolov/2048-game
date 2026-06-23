@@ -12,10 +12,11 @@
     "skipLibCheck": true,
     "types": ["vite/client", "vitest/globals"],
     "paths": {
+      "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/assets/*"],
       "@types/*": ["./src/types/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

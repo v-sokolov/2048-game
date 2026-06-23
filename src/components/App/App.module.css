@@ -11,6 +11,11 @@
   gap: 12px;
 }
 
+.board {
+  position: relative;
+  width: var(--board-width, 460px);
+}
+
 @media (max-width: 560px) {
   .header {
     flex-wrap: wrap;

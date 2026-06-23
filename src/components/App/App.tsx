@@ -1,4 +1,3 @@
-import type { TileData } from "../../types";
 import {
   Playground,
   Logo,
@@ -6,39 +5,32 @@ import {
   NewGameButton,
   UndoButton,
   GridArea,
+  GameOverlay,
   Note,
 } from "..";
+import { useGame } from "../../hooks/useGame";
 import styles from "./App.module.css";
 
-const INITIAL_SCORE = 0;
-const BEST_SCORE = 2048;
-// TODO: Mock board: all 11 known variants (2–2048) for visual verification (SC-001);
-// the remaining 5 slots render the empty Tile variant. Ids are synthesized by
-// GridArea for now — the future data layer will own them (TileData.id).
-const DUMMY_TILES: Omit<TileData, "id">[] = [
-  { value: 2, row: 0, col: 0 },
-  { value: 4, row: 0, col: 1 },
-  { value: 8, row: 0, col: 2 },
-  { value: 16, row: 0, col: 3 },
-  { value: 32, row: 1, col: 0 },
-  { value: 64, row: 1, col: 1 },
-  { value: 128, row: 1, col: 2 },
-  { value: 256, row: 1, col: 3 },
-  { value: 512, row: 2, col: 0 },
-  { value: 1024, row: 2, col: 1 },
-  { value: 2048, row: 2, col: 2 },
-];
-
 export function App() {
+  const {
+    tiles,
+    currentScore,
+    bestScore,
+    status,
+    isEmptyHistory,
+    handleUndo,
+    handleNewGame,
+  } = useGame();
+
   return (
     <Playground>
       <header className={styles.header}>
         <Logo />
         <div className={styles.scores}>
-          <Score type="score" value={INITIAL_SCORE} />
-          <Score type="best" value={BEST_SCORE} />
+          <Score type="score" value={currentScore} />
+          <Score type="best" value={bestScore} />
         </div>
-        <NewGameButton disabled={INITIAL_SCORE === 0} onClick={() => {}} />
+        <NewGameButton disabled={isEmptyHistory} onClick={handleNewGame} />
       </header>
 
       <Note>
@@ -46,9 +38,12 @@ export function App() {
         same number merge into one when they touch - combine them to reach 2048!
       </Note>
 
-      <GridArea tiles={DUMMY_TILES} />
+      <div className={styles.board}>
+        <GridArea tiles={tiles} />
+        <GameOverlay status={status} onNewGame={handleNewGame} />
+      </div>
 
-      <UndoButton onClick={() => {}} isDisabled />
+      <UndoButton onClick={handleUndo} isDisabled={isEmptyHistory} />
 
       <Note>
         Made by Vitalii Sokolov.{" "}
