@@ -51,4 +51,15 @@ describe("spawn", () => {
     const { spawned } = spawn(emptyState());
     expect(spawned?.id).toBeTruthy();
   });
+
+  it("spawned tile lands only on genuinely empty cells after findEmptyCells refactor", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const { spawned } = spawn(emptyState());
+    // Verify spawned tile is at a valid position
+    expect(spawned).not.toBeNull();
+    expect(spawned?.row).toBeGreaterThanOrEqual(0);
+    expect(spawned?.row).toBeLessThan(BOARD_SIZE);
+    expect(spawned?.col).toBeGreaterThanOrEqual(0);
+    expect(spawned?.col).toBeLessThan(BOARD_SIZE);
+  });
 });

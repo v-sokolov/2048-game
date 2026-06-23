@@ -28,4 +28,12 @@ describe("isLost", () => {
     const board = [2, 4, 8, 16, 2, 8, 16, 32, 4, 16, 32, 64, 8, 32, 64, 128];
     expect(isLost(boardOf(board))).toBe(false);
   });
+
+  it("correctly identifies board full after isBoardFull refactor", () => {
+    const emptyState = makeState([]);
+    expect(isLost(emptyState)).toBe(false);
+
+    const fullDeadlockState = deadlockState();
+    expect(isLost(fullDeadlockState)).toBe(true);
+  });
 });

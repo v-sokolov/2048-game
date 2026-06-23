@@ -1,4 +1,4 @@
-import { buildGridFromTiles } from "./grid";
+import { buildGridFromTiles, isBoardFull } from "./grid";
 import { BOARD_SIZE, type GameState, WIN_VALUE } from "./types";
 
 /** True once any tile has reached the win threshold (2048) - O(tiles). */
@@ -6,12 +6,9 @@ export function isWon(state: GameState): boolean {
   return state.tiles.some((tile) => tile.value >= WIN_VALUE);
 }
 
-/**
- * True when no move is possible: the board is full AND no two adjacent tiles are equal.
- * A direct structural check — never trial-runs the four moves - O(board).
- */
+/** True when no move is possible: board full AND no adjacent equal tiles. */
 export function isLost(state: GameState): boolean {
-  if (state.tiles.length < BOARD_SIZE * BOARD_SIZE) {
+  if (!isBoardFull({ tiles: state.tiles })) {
     return false;
   }
 

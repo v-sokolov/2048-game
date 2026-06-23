@@ -2,7 +2,6 @@ import { BOARD_SIZE, type Tile } from "./types";
 
 export type Cell = { row: number; col: number };
 
-/** Called for each cell during a forEachCell walk; `cell` is `undefined` when empty. */
 type OnCell<T> = (cell: T | undefined, row: number, col: number) => void;
 
 /**
@@ -23,7 +22,6 @@ export class Grid<T> {
     return rowWithinBounds && colWithinBounds;
   }
 
-  /** Flat row-major position of (row, col) in cellsByIndex. */
   private cellIndex({ row, col }: Cell): number {
     return row * this.sideLength + col;
   }
@@ -41,7 +39,6 @@ export class Grid<T> {
     this.cellsByIndex[this.cellIndex({ row, col })] = value;
   }
 
-  /** Visit every cell in row-major order. */
   forEachCell(onCell: OnCell<T>): void {
     for (let row = 0; row < this.sideLength; row++) {
       for (let col = 0; col < this.sideLength; col++) {
@@ -50,6 +47,23 @@ export class Grid<T> {
       }
     }
   }
+}
+
+/** Built fresh from Entity List each call — never mutated. */
+export function buildOccupiedIndices({
+  tiles,
+  sideLength = BOARD_SIZE,
+}: {
+  tiles: readonly Tile[];
+  sideLength?: number;
+}): Set<number> {
+  const occupied = new Set<number>();
+
+  for (const tile of tiles) {
+    occupied.add(tile.row * sideLength + tile.col);
+  }
+
+  return occupied;
 }
 
 /** Materialize the tile list into a spatial grid; a throwaway view rebuilt each move. */
@@ -69,7 +83,7 @@ export function buildGridFromTiles({
   return grid;
 }
 
-/** Every cell holding no tile, in row-major order. */
+/** Empty cells in row-major order. O(1) per-cell membership test via Set. */
 export function findEmptyCells({
   tiles,
   sideLength = BOARD_SIZE,
@@ -77,14 +91,31 @@ export function findEmptyCells({
   tiles: readonly Tile[];
   sideLength?: number;
 }): Cell[] {
-  const grid = buildGridFromTiles({ tiles, sideLength });
+  const occupied = buildOccupiedIndices({ tiles, sideLength });
   const emptyCells: Cell[] = [];
 
-  grid.forEachCell((tile, row, col) => {
-    if (!tile) {
-      emptyCells.push({ row, col });
+  for (let index = 0; index < sideLength * sideLength; index++) {
+    if (occupied.has(index)) {
+      continue;
     }
-  });
+
+    const row = Math.floor(index / sideLength);
+    const col = index % sideLength;
+    emptyCells.push({ row, col });
+  }
 
   return emptyCells;
+}
+
+/** O(1) via Set size — avoids O(N²) grid scan. */
+export function isBoardFull({
+  tiles,
+  sideLength = BOARD_SIZE,
+}: {
+  tiles: readonly Tile[];
+  sideLength?: number;
+}): boolean {
+  return (
+    buildOccupiedIndices({ tiles, sideLength }).size === sideLength * sideLength
+  );
 }

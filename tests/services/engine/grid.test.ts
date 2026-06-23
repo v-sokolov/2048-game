@@ -2,6 +2,8 @@ import {
   Grid,
   buildGridFromTiles,
   findEmptyCells,
+  buildOccupiedIndices,
+  isBoardFull,
 } from "@/services/engine/grid";
 import { BOARD_SIZE } from "@/services/engine";
 import { CELLS, fullState, tileAt } from "../../utils/board";
@@ -102,5 +104,65 @@ describe("findEmptyCells", () => {
 
   it("returns nothing for a full board", () => {
     expect(findEmptyCells({ tiles: fullState().tiles })).toEqual([]);
+  });
+});
+
+describe("buildOccupiedIndices", () => {
+  it("returns empty Set for empty board", () => {
+    const occupied = buildOccupiedIndices({ tiles: [] });
+    expect(occupied).toEqual(new Set());
+  });
+
+  it("returns Set {0} for single tile at (0,0)", () => {
+    const tile = tileAt("a", 0, 0);
+    const occupied = buildOccupiedIndices({ tiles: [tile] });
+    expect(occupied).toEqual(new Set([0]));
+  });
+
+  it("returns correct indices for tiles at all four corners", () => {
+    const corners = [
+      tileAt("a", 0, 0),           // index = 0 * 4 + 0 = 0
+      tileAt("b", 0, 3),           // index = 0 * 4 + 3 = 3
+      tileAt("c", 3, 0),           // index = 3 * 4 + 0 = 12
+      tileAt("d", 3, 3),           // index = 3 * 4 + 3 = 15
+    ];
+    const occupied = buildOccupiedIndices({ tiles: corners });
+    expect(occupied).toEqual(new Set([0, 3, 12, 15]));
+  });
+
+  it("returns Set with size === BOARD_SIZE² for full board", () => {
+    const occupied = buildOccupiedIndices({ tiles: fullState().tiles });
+    expect(occupied.size).toBe(BOARD_SIZE * BOARD_SIZE);
+  });
+
+  it("row-major round-trip: (row, col) → index → (row, col)", () => {
+    const sideLength = BOARD_SIZE;
+    for (let row = 0; row < sideLength; row++) {
+      for (let col = 0; col < sideLength; col++) {
+        const index = row * sideLength + col;
+        const recoveredRow = Math.floor(index / sideLength);
+        const recoveredCol = index % sideLength;
+        expect(recoveredRow).toBe(row);
+        expect(recoveredCol).toBe(col);
+      }
+    }
+  });
+});
+
+describe("isBoardFull", () => {
+  it("returns false for empty board", () => {
+    const isFull = isBoardFull({ tiles: [] });
+    expect(isFull).toBe(false);
+  });
+
+  it("returns false for partially filled board", () => {
+    const partial = [tileAt("a", 0, 0), tileAt("b", 1, 1), tileAt("c", 2, 2)];
+    const isFull = isBoardFull({ tiles: partial });
+    expect(isFull).toBe(false);
+  });
+
+  it("returns true for full board", () => {
+    const isFull = isBoardFull({ tiles: fullState().tiles });
+    expect(isFull).toBe(true);
   });
 });
