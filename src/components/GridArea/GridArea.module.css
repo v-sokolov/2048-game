@@ -45,5 +45,5 @@
     calc(var(--col) * (var(--cell-size) + var(--gap))),
     calc(var(--row) * (var(--cell-size) + var(--gap)))
   );
-  transition: transform 120ms ease-in-out;
+  transition: transform 150ms ease-in-out;
 }
