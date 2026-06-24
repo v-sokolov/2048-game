@@ -79,7 +79,6 @@ specs/006-occupied-set-optimization/
 ├── research.md          # Phase 0 output (/speckit-plan command)
 ├── data-model.md        # Phase 1 output (/speckit-plan command)
 ├── quickstart.md        # Phase 1 output (/speckit-plan command)
-├── checklists/requirements.md  # Quality validation
 └── tasks.md             # Phase 2 output (/speckit-tasks command)
 ```
 

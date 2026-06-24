@@ -5,7 +5,7 @@ description: "Task list for 2048 Data Layer implementation"
 # Tasks: 2048 Data Layer
 
 **Input**: Design documents from `/specs/002-data-layer/`
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/data-layer.md, quickstart.md
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, quickstart.md
 
 **Tests**: TDD-first is **mandatory** (Constitution §II) — every logic task is preceded by its failing test. No CSS/visual tests (Constitution §VI). No new dependencies (whitelist clean — engine/store have zero runtime deps).
 
@@ -30,7 +30,7 @@ description: "Task list for 2048 Data Layer implementation"
 
 **Purpose**: Shared types every story depends on. No story can start until these exist. ⚠️ MUST complete first.
 
-- [x] T003 Define engine types in `src/services/engine/types.ts`: `Direction`, `GameStatus`, `Tile`, `GameState`, `MergeEvent`, `MoveResult` (all `readonly`, per contracts/data-layer.md)
+- [x] T003 Define engine types in `src/services/engine/types.ts`: `Direction`, `GameStatus`, `Tile`, `GameState`, `MergeEvent`, `MoveResult` (all `readonly`)
 - [x] T004 [P] Consume the engine `Tile` directly in UI via a local import alias (`Tile as TileData` in `GridArea.tsx`) — engine `types.ts` is the single source of truth; no separate `src/types` module
 - [x] T005 Create engine barrel `src/services/engine/index.ts` (re-exports public surface; updated as functions land)
 
@@ -62,7 +62,7 @@ description: "Task list for 2048 Data Layer implementation"
 
 > **Incremental status (intentional, Constitution §III)**: US1's reducer commits `status` as a straight pass-through (`'playing'`); real win/lose derivation (`nextStatus`) is layered in by US2/T027. This keeps US1 a self-contained playable increment — not a defect.
 
-- [x] T014 [US1] Define `Action` union + `ReducerState` in `src/store/actions.ts` (per contracts/data-layer.md)
+- [x] T014 [US1] Define `Action` union + `ReducerState` in `src/store/actions.ts`
 - [x] T015 [P] [US1] Tests for `reducer` `COMMIT_MOVE` in `tests/store/reducer.test.ts`: history push (structural sharing), `best = max(best, score)`, inputs not mutated, status passes through as `'playing'` (win/lose added in US2)
 - [x] T016 [US1] Implement `reducer` skeleton + `COMMIT_MOVE` case in `src/store/reducer.ts` (pure; no engine calls, no `Math.random`) to pass T015
 

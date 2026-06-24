@@ -27,7 +27,7 @@ A single design colour and its canonical code reference.
 | usages | Design elements using it. |
 | code_reference | `:root` variable name or the literal in a module file. |
 
-Confirmed palette state: tile colours match exactly (Decision 1). The only palette change is introducing a semantic **`--color-brand-hover: #a38b67`** for the New Game hover/press, distinct from `--color-brand-dark: #6b5432` (which is the 2048 gradient end, not a hover colour). See [contracts/palette.md](./contracts/palette.md).
+Confirmed palette state: tile colours match exactly (Decision 1). The only palette change is introducing a semantic **`--color-brand-hover: #a38b67`** for the New Game hover/press, distinct from `--color-brand-dark: #6b5432` (which is the 2048 gradient end, not a hover colour). Defined in `src/styles/global.css`.
 
 ## State Set (per interactive control)
 

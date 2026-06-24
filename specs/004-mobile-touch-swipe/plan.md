@@ -2,8 +2,6 @@
 
 **Branch**: `004-mobile-touch-swipe` | **Date**: 2026-06-23 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `/specs/004-mobile-touch-swipe/spec.md`
-
 ## Summary
 
 Add swipe gestures so the game is playable on touchscreens, emitting the same `Direction` moves the keyboard already produces. Input lives in `src/hooks/input/`, split by source: a **pure, unit-tested mapping** (`getTouchDirection(deltaX, deltaY, minSwipeDistance) → Direction | null`), a **thin browser-verified touch hook** (`useTouchInput(onMove)` that creates+returns the board ref and prevents default scroll/zoom), a keyboard hook (`useKeyboardInput`), and a high-order composer (`useDirectionInput(onMove)`). `useGame` owns input (calls the composer with `handleMove`, re-exposes `boardRef`); `App` attaches the ref. No engine/store/keyboard-behaviour changes — `handleMove` already gates on game status (FR-008).
@@ -48,20 +46,6 @@ Add swipe gestures so the game is playable on touchscreens, emitting the same `D
 
 ## Project Structure
 
-### Documentation (this feature)
-
-```text
-specs/004-mobile-touch-swipe/
-├── plan.md          # This file
-├── research.md      # Phase 0 — decisions (mapping seam, min swipe distance, capture target, test strategy)
-├── data-model.md    # Phase 1 — gesture/direction model (documentation only)
-├── quickstart.md    # Phase 1 — how to run & verify (tests + in-browser)
-├── contracts/
-│   └── input.md     # Phase 1 — getTouchDirection() + input hooks interface contract
-└── checklists/
-    └── requirements.md
-```
-
 ### Source Code (files this feature adds/modifies)
 
 ```text
@@ -80,7 +64,3 @@ tests/hooks/
 ```
 
 **Structure Decision**: Input lives in a dedicated `src/hooks/input/` layer, **split by source** (keyboard, swipe), each file holding its hook (+ the pure `getTouchDirection` helper). A single high-order hook `useDirectionInput` composes them and returns the board ref. `useGame` is the single input owner (calls `useDirectionInput(handleMove)`, re-exposes `boardRef`); `App` only attaches the ref. The ref is created by the touch hook and flows out as a return value — no DOM ref threaded through the pure-logic `useGame`. Engine/store untouched.
-
-## Complexity Tracking
-
-No constitution violations — section intentionally empty.
