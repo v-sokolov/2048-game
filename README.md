@@ -72,16 +72,17 @@ A few decisions worth calling out:
 
 ## Run it locally
 
-**Prerequisites:** Node `24.13.0` (see [`.nvmrc`](.nvmrc)) and Corepack for Yarn 4
-(`corepack enable`).
+**Prerequisites:** Node `24.13.0` (see [`.nvmrc`](.nvmrc)).
 
 ```bash
-yarn install     # install dependencies
-yarn dev         # start the dev server (Vite)
-yarn test        # run the test suite (89 tests)
-yarn build       # type-check (tsc --noEmit) and produce a production build
-yarn preview     # serve the production build locally
+npm install      # install dependencies
+npm run dev      # start the dev server (Vite)
+npm test         # run the test suite (89 tests)
+npm run build    # type-check (tsc --noEmit) and produce a production build
+npm run preview  # serve the production build locally
 ```
+
+Any package manager works (npm, yarn, or pnpm) - the scripts call the tools directly.
 
 ## Known limitations / Future ideas
 

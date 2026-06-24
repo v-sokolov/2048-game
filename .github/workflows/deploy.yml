@@ -24,14 +24,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24.13.0
-      # packageManager field activates yarn 4 via corepack.
-      - run: corepack enable
       - uses: actions/configure-pages@v5
-      # No lockfile committed (locally-generated one pins internal Wix registry).
-      # --no-immutable lets yarn resolve fresh from public registry on each CI run.
-      - run: yarn install --no-immutable
+      # No lockfile committed resolves fresh from the public registry each run.
+      - run: npm install
       # tsc --noEmit && vite build; a type/build error fails here so deploy never runs.
-      - run: yarn build
+      - run: npm run build
         env:
           GITHUB_PAGES: 'true'
       - uses: actions/upload-pages-artifact@v3
