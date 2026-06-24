@@ -6,7 +6,7 @@ description: "Task list — Design Conformance Audit"
 
 **Input**: Design documents from `/specs/003-figma-design-conformance/`
 
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/palette.md
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md
 
 **Tests**: NONE. Per Constitution §VI this is pure visual styling — no CSS/visual tests are written. Verification is visual (running app via `preview_*`, side-by-side with the design wireframes) plus confirming the existing Vitest suite stays green (no regression). No new dependencies (Constitution §Tech Stack).
 
@@ -29,7 +29,7 @@ description: "Task list — Design Conformance Audit"
 
 **⚠️ T003 blocks US2 application (T011) and the Positioning phase (T015–T019). T002 (tokens) blocks the US1 shadow tasks (T004, T006), US3 (T013), and US4 (T020).**
 
-- [x] T002 Add semantic tokens to `:root` in `src/styles/global.css` (see contracts/palette.md): `--color-brand-hover: #a38b67` (distinct from `--color-brand-dark`) and `--shadow-ambient: 0 8px 20px rgba(149,105,64,0.20)` (shared warm-brown ambient elevation reused by numbered tiles + the Undo button).
+- [x] T002 Add semantic tokens to `:root` in `src/styles/global.css`: `--color-brand-hover: #a38b67` (distinct from `--color-brand-dark`) and `--shadow-ambient: 0 8px 20px rgba(149,105,64,0.20)` (shared warm-brown ambient elevation reused by numbered tiles + the Undo button).
 - [x] T003 Confirm the outstanding design values and record them in `research.md` (Decision 6 + 7): Score box label/value colour & size, Note font-size & colour, Logo, board fill `#ece0cb`; and positioning specifics — header container y-offsets/baseline, board outer position & centring, Undo footer offset. Read from the Design Requirements (property-panel values or screenshots).
 
 **Checkpoint**: token in place; outstanding values confirmed.

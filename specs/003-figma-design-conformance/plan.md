@@ -2,8 +2,6 @@
 
 **Branch**: `003-figma-design-conformance` | **Date**: 2026-06-23 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `/specs/003-figma-design-conformance/spec.md`
-
 ## Summary
 
 Reconcile the implemented 2048 UI with the **Design Requirements** (the FE-test design wireframes) as source of truth, across three categories: static styling, colour palette, and interactive states. Values are taken from the documented Design Requirements. Approach: a CSS-only pass that corrects measured mismatches in the affected `*.module.css` files and `global.css`; no component behaviour, markup, or game logic changes. A bounded set of **positioning** items is in scope per the user (FR-008a); caption placement and the Undo↔caption gap stay untouched (FR-008b). Press/active state is sequenced last (US4, P3).
@@ -50,20 +48,6 @@ Reconcile the implemented 2048 UI with the **Design Requirements** (the FE-test 
 
 ## Project Structure
 
-### Documentation (this feature)
-
-```text
-specs/003-figma-design-conformance/
-├── plan.md          # This file
-├── research.md      # Phase 0 — value-by-value conformance matrix (design vs code)
-├── data-model.md    # Phase 1 — conformance-finding & palette-entry model
-├── quickstart.md    # Phase 1 — how to verify conformance
-├── contracts/
-│   └── palette.md   # Phase 1 — canonical colour/token contract
-└── checklists/
-    └── requirements.md
-```
-
 ### Source Code (files this feature will modify)
 
 ```text
@@ -83,7 +67,3 @@ src/
 ```
 
 **Structure Decision**: No structural change. The feature is a styling reconciliation confined to the existing component layer plus the shared `global.css` palette. The App/Playground module CSS is in scope only for the user-approved positioning items (FR-008a). Component boundaries, the engine, hooks, and store are untouched.
-
-## Complexity Tracking
-
-No constitution violations — section intentionally empty.
