@@ -56,6 +56,10 @@ A few decisions worth calling out:
   tile a stable `id` plus its `value`/`row`/`col`. The 2D board is a derived, transient
   `Grid<T>` (flat-backed) rebuilt only to compute a move. A stable identity is what lets
   tiles animate smoothly and lets merges be tracked correctly.
+- **One move function, not four.** The slide-and-merge rules are identical in every
+  direction, so all four normalize to a single operation: collapse a line toward index 0.
+  The move action is pure - spawning the random new tile is a separate step - which keeps
+  the rules easy to test.
 - **The engine is pure and framework-agnostic.** Every rule (move, merge, spawn,
   win/lose) is a plain function with no React or DOM dependency, so it's trivial to
   unit-test in isolation.
